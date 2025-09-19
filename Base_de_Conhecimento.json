@@ -1,0 +1,249 @@
+{
+  "name": "Base de Conhecimento",
+  "nodes": [
+    {
+      "parameters": {
+        "dataType": "binary",
+        "loader": "pdfLoader",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1,
+      "position": [
+        220,
+        180
+      ],
+      "id": "1a94a67e-06b2-4c75-b3ce-f2814020569e",
+      "name": "Default Data Loader"
+    },
+    {
+      "parameters": {
+        "chunkSize": 2000
+      },
+      "type": "@n8n/n8n-nodes-langchain.textSplitterCharacterTextSplitter",
+      "typeVersion": 1,
+      "position": [
+        220,
+        340
+      ],
+      "id": "f83758a9-be19-4a4a-9fbe-22f2f17a8bb1",
+      "name": "Character Text Splitter"
+    },
+    {
+      "parameters": {
+        "operation": "select",
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "n8n_vectors",
+          "mode": "list",
+          "cachedResultName": "n8n_vectors"
+        },
+        "returnAll": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        -400,
+        200
+      ],
+      "id": "33926430-2d1b-4b9b-8359-55e68ba80911",
+      "name": "Consulta Banco",
+      "credentials": {
+        "postgres": {
+          "id": "8wZQyhi5Jxs3KkzT",
+          "name": "postgrespgvector"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "deleteTable",
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "n8n_vectors",
+          "mode": "list",
+          "cachedResultName": "n8n_vectors"
+        },
+        "deleteCommand": "delete",
+        "where": {
+          "values": [
+            {
+              "column": "id",
+              "value": "0e2b58e5-5895-4691-a475-93d11892e630"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        -200,
+        200
+      ],
+      "id": "e5e0aa9c-6cdc-4bb1-84a1-4ffa929ede7c",
+      "name": "Deleta Banco",
+      "credentials": {
+        "postgres": {
+          "id": "8wZQyhi5Jxs3KkzT",
+          "name": "postgrespgvector"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "55e2d716-878d-4137-9951-c74161793053",
+      "name": "Embeddings OpenAI2",
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.1,
+      "position": [
+        40,
+        200
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "OubSFnSx9ahX7Uei",
+          "name": "MinhaAPI"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://s3.trecofantastico.com.br/conhecimento/Tabela_de_Precos_Astra_Online.pdf",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -200,
+        -20
+      ],
+      "id": "31c260ed-a363-42f6-9b7e-daaa0c725d58",
+      "name": "Puxa os dados S3"
+    },
+    {
+      "parameters": {},
+      "id": "7f044e41-102c-4e0f-a9a6-90264bc38dfb",
+      "name": "When clicking ‘Test workflow’",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -400,
+        -20
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "tableName": "astraonlinepdf",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePGVector",
+      "typeVersion": 1,
+      "position": [
+        80,
+        -20
+      ],
+      "id": "7871ad05-598c-4ce3-b1d0-b7ca9a76a31d",
+      "name": "Postgres PGVector Store1",
+      "credentials": {
+        "postgres": {
+          "id": "8wZQyhi5Jxs3KkzT",
+          "name": "postgrespgvector"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Default Data Loader": {
+      "ai_document": [
+        [
+          {
+            "node": "Postgres PGVector Store1",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Character Text Splitter": {
+      "ai_textSplitter": [
+        [
+          {
+            "node": "Default Data Loader",
+            "type": "ai_textSplitter",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Consulta Banco": {
+      "main": [
+        [
+          {
+            "node": "Deleta Banco",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI2": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Postgres PGVector Store1",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Puxa os dados S3": {
+      "main": [
+        [
+          {
+            "node": "Postgres PGVector Store1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "Puxa os dados S3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "57881bba-cb0e-4aae-86ef-ad406609785c",
+  "meta": {
+    "instanceId": "33738330930e3881dd5571eca013f36ddf8aab20e4ea5c1f2ebaf4a2b4668ac6"
+  },
+  "id": "F53wO5pNXhg5svSH",
+  "tags": []
+}
