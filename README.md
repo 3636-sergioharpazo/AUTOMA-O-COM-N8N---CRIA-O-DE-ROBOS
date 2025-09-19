@@ -1,4 +1,5 @@
-# AUTOMA-O-COM-N8N---CRIA-O-DE-ROBOS
+# Automação com n8n — Plataforma de Criação e Gerenciamento de Robôs
+
 
 > API para criação de robôs com n8n — automação com Docker, VPS e API completa
 
@@ -187,6 +188,8 @@ curl -X POST https://seu-dominio.com/api/workflows/123/execute \
 
 Este projeto está sob a licença MIT — veja o arquivo `LICENSE` para detalhes.
 
+## Contato
 
+📧 E-mail: `sergioharpazo@gmail.com`
+🌐 Site: https://loja.antoniooliveira.shop/
 
-> Se quiser, eu adapto este README com instruções específicas do seu projeto (arquivos `docker-compose.yml`, fluxos n8n de exemplo, modelos de `.env`, ou endpoints reais). Basta me enviar mais detalhes.
